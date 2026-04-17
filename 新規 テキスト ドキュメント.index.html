@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ID確認</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+
+<body style="text-align:center; font-family:sans-serif;">
+
+  <h2>あなたのID</h2>
+
+  <p id="result" style="font-size:40px; font-weight:bold;">
+    読み込み中...
+  </p>
+
+  <button id="copyBtn" onclick="copyId()" 
+    style="
+      font-size: 24px;
+      padding: 15px 30px;
+      background-color: #06C755;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      transition: 0.2s;
+    ">
+    コピー
+  </button>
+
+  <p id="message" style="font-size:32px; margin-top:20px;"></p>
+
+  <script>
+    let userId = "";
+
+    liff.init({ liffId: "ここにLIFF ID" }).then(() => {
+      liff.getProfile().then(profile => {
+        userId = profile.userId;
+        document.getElementById("result").innerText = userId;
+      });
+    });
+
+    function copyId() {
+      navigator.clipboard.writeText(userId).then(() => {
+
+        // 振動（スマホ）
+        if (navigator.vibrate) {
+          navigator.vibrate(100);
+        }
+
+        // チェックアニメーション表示
+        const msg = document.getElementById("message");
+        msg.innerHTML = "✔ コピーしました！";
+        msg.style.color = "green";
+        msg.style.transform = "scale(1.5)";
+        msg.style.transition = "0.2s";
+
+        setTimeout(() => {
+          msg.style.transform = "scale(1)";
+        }, 200);
+
+        // ボタン色変更
+        const btn = document.getElementById("copyBtn");
+        btn.style.backgroundColor = "#999";
+
+        // 戻す
+        setTimeout(() => {
+          btn.style.backgroundColor = "#06C755";
+          msg.innerHTML = "";
+        }, 1200);
+
+      });
+    }
+  </script>
+
+</body>
+</html>
