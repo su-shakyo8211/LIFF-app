@@ -8,55 +8,91 @@
 
 <body style="text-align:center; font-family:sans-serif;">
 
-  <h2>あなたのID</h2>
+  <!-- ① 説明画面 -->
+  <div id="screen1">
+    <h2>抽選について</h2>
 
-  <p id="result" style="font-size:40px; font-weight:bold;">
-    読み込み中...
-  </p>
+    <p style="padding: 0 20px;">
+      本サービスでは、抽選結果の表示および本人確認のためにLINEのユーザーIDを使用します。<br><br>
+      取得した情報は本目的以外には使用せず、第三者へ提供することはありません。<br><br>
+      イベント終了後は適切に削除いたします。
+    </p>
 
-  <button id="copyBtn" onclick="copyId()"
-    style="
-      font-size: 24px;
-      padding: 15px 30px;
-      background-color: #06C755;
-      color: white;
-      border: none;
-      border-radius: 10px;
-    ">
-    コピー
-  </button>
+    <button onclick="startApp()" 
+      style="
+        font-size: 20px;
+        padding: 12px 25px;
+        background-color: #06C755;
+        color: white;
+        border: none;
+        border-radius: 10px;
+      ">
+      同意して進む
+    </button>
+  </div>
 
-  <p id="message" style="font-size:32px; margin-top:20px;"></p>
+  <!-- ② ID表示画面 -->
+  <div id="screen2" style="display:none;">
+
+    <h2>あなたのID</h2>
+
+    <p id="result" style="font-size:40px; font-weight:bold;">
+      読み込み中...
+    </p>
+
+    <button id="copyBtn" onclick="copyId()" 
+      style="
+        font-size: 24px;
+        padding: 15px 30px;
+        background-color: #06C755;
+        color: white;
+        border: none;
+        border-radius: 10px;
+      ">
+      コピー
+    </button>
+
+    <p id="message" style="font-size:30px; margin-top:20px;"></p>
+
+  </div>
 
   <script>
     let userId = "";
 
-    liff.init({ liffId: "2009766769-dYM8u1CB" }).then(() => {
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      } else {
+    function startApp() {
+      // 画面切り替え
+      document.getElementById("screen1").style.display = "none";
+      document.getElementById("screen2").style.display = "block";
+
+      // LIFF初期化
+      liff.init({ liffId: "2009766769-dYM8u1CB" }).then(() => {
         liff.getProfile().then(profile => {
           userId = profile.userId;
           document.getElementById("result").innerText = userId;
         });
-      }
-    }).catch(err => {
-      document.getElementById("result").innerText = "エラー：" + err;
-    });
+      });
+    }
 
     function copyId() {
-      if (!userId) return;
-
       navigator.clipboard.writeText(userId).then(() => {
 
+        // 振動
         if (navigator.vibrate) {
           navigator.vibrate(100);
         }
 
+        // メッセージ
         const msg = document.getElementById("message");
         msg.innerHTML = "✔ コピーしました！";
         msg.style.color = "green";
+        msg.style.transform = "scale(1.5)";
+        msg.style.transition = "0.2s";
 
+        setTimeout(() => {
+          msg.style.transform = "scale(1)";
+        }, 200);
+
+        // ボタン色変更
         const btn = document.getElementById("copyBtn");
         btn.style.backgroundColor = "#999";
 
